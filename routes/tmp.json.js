@@ -1,14 +1,22 @@
 'use strict'
 
-import {
+const {
   reduce,
-  values,
-} from 'lodash/fp'
-import comb from 'combinatorics'
+  flow,
+  flatten,
+  toPairs,
+  mapValues,
+  map,
+} = require('lodash/fp')
+const comb = require('combinatorics')
+
+const mapWithIndex = map.convert({ 'cap': false })
 
 const criteria = {
-  importance: [ 'high', 'mid', 'low' ],
-  urgency: [ 'vital', 'pressing', 'necessary' ],
+  // importance: [ 'high', 'mid', 'low' ],
+  // urgency: [ 'vital', 'pressing', 'necessary' ],
+  a: ['high', 'low'],
+  b: ['high', 'low'],
 }
 
 
@@ -21,12 +29,27 @@ const numberOfAlternatives = reduce(x)(0)(criteria)
 
 // calculate dominated pairs
 
-const out = comb.holistic(...values(criteria))
+const y = (categories, criterion) =>
+  map((value, index) =>
+    ({value,index}))(categories)
 
-export function get(req, res) {
-	res.writeHead(200, {
-		'Content-Type': 'application/json'
-	});
+const z = ([criterion, categories]) =>
+  mapWithIndex((category, index) =>
+    // we could remove category from here, and find it again later on based on index
+    ({ criterion, category, index })
+  )(categories)
 
-	res.end(JSON.stringify(out, undefined, 2));
-}
+const categories = flow(toPairs, map(z))(criteria)
+
+const combinations = comb.holistic(...categories)
+
+const out = combinations
+console.log(JSON.stringify(out, undefined, 2))
+
+// export function get(req, res) {
+// 	res.writeHead(200, {
+// 		'Content-Type': 'application/json'
+// 	});
+//
+// 	res.end(JSON.stringify(out, undefined, 2));
+// }

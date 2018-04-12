@@ -22,5 +22,8 @@
     "svelte": "^1.57.3",
     "svelte-loader": "^2.3.3",
     "webpack": "^4.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
   }
 }
